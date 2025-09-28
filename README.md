@@ -14,4 +14,3 @@ Features
 
   5. Professional & Intuitive UI: A clean, organized layout with a sidebar for instructions makes the dashboard easy to use for everyone.
 
-
