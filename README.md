@@ -13,3 +13,4 @@ Features
   4. Effortless Pagination: Navigate through large datasets with a simple "Next" and "Previous" button system, customizing how many rows you see per page.
 
   5. Professional & Intuitive UI: A clean, organized layout with a sidebar for instructions makes the dashboard easy to use for everyone.
+
