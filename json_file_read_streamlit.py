@@ -133,7 +133,7 @@ if uploaded_file is not None:
         st.subheader("Data Filters")
         
         df_to_filter = st.session_state.df_original.copy()
-        filter_cols = ["topic_name", "publisher", "pulication_type"]
+        filter_cols = ["topic_name", "publisher", "publication_type"]
         active_filters = {}
         
         # Create dropdowns for existing filter columns
@@ -280,4 +280,5 @@ if uploaded_file is not None:
         st.info("Please ensure your file is correctly formatted.")
 else:
     st.info("👆 Please upload a file to begin.")
+
 
