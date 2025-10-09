@@ -32,13 +32,10 @@ def load_nested_json(file_content):
 
     # Case 2: Data is a dict (nested structure)
     elif isinstance(data, dict):
-        # Reset pointer for info message only
-        # st.info("Uploaded JSON is a dictionary. Searching for a nested list of records...")
         
         # Heuristic: Find the first value that is a non-empty list
         for key, value in data.items():
             if isinstance(value, list) and len(value) > 0 and isinstance(value[0], dict):
-                # st.success(f"Successfully extracted list of records from key: **{key}**")
                 return pd.DataFrame(value), None
 
         # Fallback: Try to normalize the entire dictionary
@@ -125,11 +122,12 @@ if uploaded_file is not None:
             st.stop()
 
         # Initialize or update session state variables for the original (unfiltered) data
-        if 'df_original' not in st.session_state or st.session_state.df_original.equals(df) is False:
+        # Check by name and length for a rough re-upload check
+        if 'df_original' not in st.session_state or st.session_state.df_original.shape != df.shape:
             st.session_state.df_original = df.copy() # Store a copy of the original data
             st.session_state.page = 0
             
-        # --- Data Filtering UI (New Requirement) ---
+        # --- Data Filtering UI ---
         st.subheader("Data Filters")
         
         df_to_filter = st.session_state.df_original.copy()
@@ -195,8 +193,10 @@ if uploaded_file is not None:
             if not selected_cols:
                 st.warning("Please select at least one column to display.")
                 st.stop()
+            # *** This is the final DataFrame that is both row-filtered and column-filtered ***
             display_df = st.session_state.df_filtered[selected_cols]
         else:
+            # *** This is the final DataFrame that is only row-filtered ***
             display_df = st.session_state.df_filtered
         
         if display_df.empty:
@@ -258,19 +258,20 @@ if uploaded_file is not None:
                 else:
                     st.warning("You're on the last page.")
         
-        # --- Download Button (New Requirement) ---
+        # --- Download Button (FIXED) ---
         @st.cache_data
         def convert_df_to_csv(df):
             # IMPORTANT: Cache the conversion to prevent computation on every rerun
             return df.to_csv(index=False).encode('utf-8')
         
+        # *** FIX APPLIED HERE: Pass display_df (which has both row and column filtering) ***
         csv_data = convert_df_to_csv(display_df)
         
         with col4:
             st.download_button(
-                label="Download Filtered Data as CSV ⬇️",
+                label="Download Displayed Data as CSV ⬇️",
                 data=csv_data,
-                file_name=f'filtered_data_{pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")}.csv',
+                file_name=f'displayed_data_{pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")}.csv',
                 mime='text/csv',
                 help="Downloads the data currently shown after all filtering and column selection."
             )
@@ -280,5 +281,3 @@ if uploaded_file is not None:
         st.info("Please ensure your file is correctly formatted.")
 else:
     st.info("👆 Please upload a file to begin.")
-
-
